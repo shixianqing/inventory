@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.inventory.inventory.task.dao.TaskInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.inventory.inventory.task.model.TaskInfo" >
+    <id column="task_id" property="taskId" jdbcType="INTEGER" />
+    <result column="task_status" property="taskStatus" jdbcType="VARCHAR" />
+    <result column="is_valid" property="isValid" jdbcType="VARCHAR" />
+    <result column="send_user_id" property="sendUserId" jdbcType="INTEGER" />
+    <result column="create_operator" property="createOperator" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_operator" property="updateOperator" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    task_id, task_status, is_valid, send_user_id, create_operator, create_time, update_operator, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_info
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </select>
+
+    <select id="pageQuery" parameterType="com.inventory.inventory.task.dto.TaskInfoDto" resultType="map">
+        select  t.task_id, t.task_status, t.is_valid, t.send_user_id, t.create_operator, t.create_time, t.update_operator,
+                t.update_time,s.store_name,s.store_address,s.leader_name,s.leader_phone_no,gd.goods_name,g.goods_num,g.goods_unit
+        from
+          task_info t
+        left join
+          task_goods_info g
+        on t.task_id = g.task_id
+        left join
+          store_info s
+        on g.store_id = s.store_id
+        left join
+         goods_info gd
+        on g.goods_id = gd.goods_id
+        <where>
+            <if test="taskId != null">
+                t.task_id = #{taskId,jdbcType=INTEGER} AND
+            </if>
+            <if test="createOperator != null">
+                t.create_operator = #{createOperator,jdbcType=INTEGER}AND
+            </if>
+        </where>
+
+    </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from task_info
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </delete>
+
+
+  <insert id="insert" parameterType="com.inventory.inventory.task.dto.TaskInfoDto" >
+      <selectKey keyProperty="task_id" resultType="java.lang.Integer">
+          select LAST_INSERT_ID()
+      </selectKey>
+    insert into task_info (task_status, is_valid,
+      send_user_id, create_operator, create_time)
+    values (#{taskStatus,jdbcType=VARCHAR}, #{isValid,jdbcType=VARCHAR},
+      #{sendUserId,jdbcType=INTEGER}, #{createOperator,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+
+  <insert id="insertSelective" parameterType="com.inventory.inventory.task.model.TaskInfo" >
+    insert into task_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        task_id,
+      </if>
+      <if test="taskStatus != null" >
+        task_status,
+      </if>
+      <if test="isValid != null" >
+        is_valid,
+      </if>
+      <if test="sendUserId != null" >
+        send_user_id,
+      </if>
+      <if test="createOperator != null" >
+        create_operator,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateOperator != null" >
+        update_operator,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="taskStatus != null" >
+        #{taskStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null" >
+        #{isValid,jdbcType=VARCHAR},
+      </if>
+      <if test="sendUserId != null" >
+        #{sendUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createOperator != null" >
+        #{createOperator,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateOperator != null" >
+        #{updateOperator,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.inventory.inventory.task.dto.TaskInfoDto" >
+    update task_info
+    <set >
+      <if test="taskStatus != null" >
+        task_status = #{taskStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null" >
+        is_valid = #{isValid,jdbcType=VARCHAR},
+      </if>
+      <if test="sendUserId != null" >
+        send_user_id = #{sendUserId,jdbcType=INTEGER},
+      </if>
+      <if test="updateOperator != null" >
+        update_operator = #{updateOperator,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.inventory.inventory.task.model.TaskInfo" >
+    update task_info
+    set task_status = #{taskStatus,jdbcType=VARCHAR},
+      is_valid = #{isValid,jdbcType=VARCHAR},
+      send_user_id = #{sendUserId,jdbcType=INTEGER},
+      create_operator = #{createOperator,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_operator = #{updateOperator,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </update>
+</mapper>
