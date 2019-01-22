@@ -60,4 +60,7 @@ public final class ResponseCode {
     public static final Integer UPDATE_FAIL_CODE = 5555;
 
 
+    public static final Integer CHECK_FAIL_CODE = 8888;
+
+
 }
