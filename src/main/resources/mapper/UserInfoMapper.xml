@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.inventory.inventory.user.dao.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.inventory.inventory.user.model.UserInfo" >
+    <id column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_login_no" property="userLoginNo" jdbcType="VARCHAR" />
+    <result column="weixin_id" property="weixinId" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_pwd" property="userPwd" jdbcType="INTEGER" />
+    <result column="is_valid" property="isValid" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_operator" property="updateOperator" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    user_id, user_login_no, weixin_id, user_name, user_pwd, is_valid, create_time, update_operator, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_info
+    where user_login_no = #{loginName,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from user_info
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="registry" parameterType="com.inventory.inventory.user.dto.RegistryDto">
+      <selectKey keyProperty="userId" resultType="java.lang.Integer">
+          select LAST_INSERT_ID()
+      </selectKey>
+    insert into user_info (user_login_no,
+      user_name, user_pwd, is_valid,
+      create_time
+      )
+    values (#{loginName,jdbcType=VARCHAR},
+        #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 1,
+      #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insert" parameterType="com.inventory.inventory.user.model.UserInfo" >
+    insert into user_info (user_id, user_login_no, weixin_id, 
+      user_name, user_pwd, is_valid, 
+      create_time, update_operator, update_time
+      )
+    values (#{userId,jdbcType=INTEGER}, #{userLoginNo,jdbcType=VARCHAR}, #{weixinId,jdbcType=VARCHAR}, 
+      #{userName,jdbcType=VARCHAR}, #{userPwd,jdbcType=INTEGER}, #{isValid,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateOperator,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.inventory.inventory.user.model.UserInfo" >
+    insert into user_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userLoginNo != null" >
+        user_login_no,
+      </if>
+      <if test="weixinId != null" >
+        weixin_id,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="userPwd != null" >
+        user_pwd,
+      </if>
+      <if test="isValid != null" >
+        is_valid,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateOperator != null" >
+        update_operator,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userLoginNo != null" >
+        #{userLoginNo,jdbcType=VARCHAR},
+      </if>
+      <if test="weixinId != null" >
+        #{weixinId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userPwd != null" >
+        #{userPwd,jdbcType=INTEGER},
+      </if>
+      <if test="isValid != null" >
+        #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateOperator != null" >
+        #{updateOperator,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.inventory.inventory.user.model.UserInfo" >
+    update user_info
+    <set >
+      <if test="userLoginNo != null" >
+        user_login_no = #{userLoginNo,jdbcType=VARCHAR},
+      </if>
+      <if test="weixinId != null" >
+        weixin_id = #{weixinId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userPwd != null" >
+        user_pwd = #{userPwd,jdbcType=INTEGER},
+      </if>
+      <if test="isValid != null" >
+        is_valid = #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateOperator != null" >
+        update_operator = #{updateOperator,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.inventory.inventory.user.model.UserInfo" >
+    update user_info
+    set user_login_no = #{userLoginNo,jdbcType=VARCHAR},
+      weixin_id = #{weixinId,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      user_pwd = #{userPwd,jdbcType=INTEGER},
+      is_valid = #{isValid,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_operator = #{updateOperator,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+</mapper>
