@@ -62,5 +62,18 @@ public final class ResponseCode {
 
     public static final Integer CHECK_FAIL_CODE = 8888;
 
+    /**
+     * 密码不等
+     */
+    public static final Integer PWD_NOT_EQUAL_CODE = 2222;
 
+    /**
+     * 用户不存在
+     */
+    public static final Integer USER_NOT_EXSIT_CODE = 3333;
+
+    /**
+     * 密码错误
+     */
+    public static final Integer PWD_ERROR_CODE = 6666;
 }

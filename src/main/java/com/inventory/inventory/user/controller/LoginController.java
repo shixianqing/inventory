@@ -1,26 +1,24 @@
 package com.inventory.inventory.user.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.inventory.inventory.common.exception.BusinessException;
-import com.inventory.inventory.common.https.HttpsClientRequestFactory;
 import com.inventory.inventory.common.redis.RedisService;
 import com.inventory.inventory.common.response.MetaRestResponse;
 import com.inventory.inventory.common.response.ResponseCode;
+import com.inventory.inventory.user.dto.LoginDto;
+import com.inventory.inventory.user.dto.RegistryDto;
+import com.inventory.inventory.user.model.UserInfo;
+import com.inventory.inventory.user.service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
-import java.util.List;
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,6 +39,9 @@ public class LoginController {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private LoginService loginService;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
@@ -64,9 +65,29 @@ public class LoginController {
         }
 
         String uuid = UUID.randomUUID().toString();
-        redisService.setMap(uuid,result,1000*60*60*24*30);
+        redisService.setMap(uuid,result,1000*60*60*24*30L);
         LOGGER.info("获取用户会话id，会话密钥，结束了...........");
         return MetaRestResponse.success(ResponseCode.SUCCESS,uuid);
 
+    }
+
+
+    @PostMapping("/registry")
+    public MetaRestResponse registry(@RequestBody RegistryDto registryDto){
+        LOGGER.info("进入registry方法了.........");
+        loginService.registry(registryDto);
+        LOGGER.info("退出registry方法了.........");
+        return MetaRestResponse.success(ResponseCode.SUCCESS,"注册成功");
+    }
+
+
+    @PostMapping("/login")
+    public MetaRestResponse login(@RequestBody LoginDto loginDto){
+        LOGGER.info("进入login方法了.........");
+        UserInfo userInfo = loginService.login(loginDto);
+        String uuid = UUID.randomUUID().toString();
+        redisService.setT(uuid,userInfo,1000*60*60);
+        LOGGER.info("退出login方法了.........token：{}", uuid);
+        return MetaRestResponse.success(ResponseCode.SUCCESS,uuid);
     }
 }

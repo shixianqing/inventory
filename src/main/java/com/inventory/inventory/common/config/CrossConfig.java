@@ -49,17 +49,14 @@ public class CrossConfig extends DelegatingWebMvcConfiguration {
                    }
                }
 
-               String token = request.getParameter("token");
+               String token = request.getHeader("token");
                if (ObjectUtils.isEmpty(token)){
                    throw new BusinessException(ResponseCode.CHECK_FAIL_CODE,"未发现令牌，请登录！");
                }
 
-               Map userInfo = redisService.getMap(token);
-
-               if (ObjectUtils.isEmpty(userInfo)){
-                   throw new BusinessException(ResponseCode.CHECK_FAIL_CODE,"令牌非法！");
+               if (ObjectUtils.isEmpty(redisService.getT(token))){
+                   throw new BusinessException(ResponseCode.CHECK_FAIL_CODE,"令牌非法，请重新登录！");
                }
-
                return true;
             }
         });
