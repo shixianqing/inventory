@@ -1,6 +1,8 @@
 package com.inventory.inventory.task.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.inventory.inventory.common.response.MetaRestResponse;
 import com.inventory.inventory.common.response.ResponseCode;
 import com.inventory.inventory.task.dto.TaskInfoDto;
@@ -49,12 +51,19 @@ public class TaskController {
         return MetaRestResponse.success(ResponseCode.SUCCESS,"任务分配成功！");
     }
 
+    /**
+     * 查询任务
+     * @param taskInfoDto
+     * @param token
+     * @return
+     */
     @PostMapping("/query")
     public MetaRestResponse queryTasks(@RequestBody TaskInfoDto taskInfoDto, @RequestHeader("token") String token) {
         LOGGER.info("进入【queryTasks】方法中了.........请求参数为：{}", JSONObject.toJSONString(taskInfoDto,true));
+        PageHelper.startPage(taskInfoDto.getPageNo(),taskInfoDto.getPageSize());
         List<TaskInfoVo> taskInfoVos = taskService.queryTasks(taskInfoDto,token);
         LOGGER.info("退出【queryTasks】方法了.........结果集为：{}",JSONObject.toJSONString(taskInfoVos,true));
-        return MetaRestResponse.success(ResponseCode.SUCCESS,taskInfoVos);
+        return MetaRestResponse.success(ResponseCode.SUCCESS,new PageInfo(taskInfoVos));
     }
 
     /**
@@ -69,6 +78,22 @@ public class TaskController {
 
         LOGGER.info("进入【receiveTask】方法中了，请求参数为：{}",JSONObject.toJSONString(taskInfoDtos,true));
         taskService.receiveTask(taskInfoDtos,token);
+        LOGGER.info("退出【receiveTask】方法.......");
+        return MetaRestResponse.success(ResponseCode.SUCCESS,"接收任务成功！");
+    }
+
+    /**
+     * 送货员完成任务
+     * 批量处理
+     * @param taskInfoDtos 任务id的集合
+     * @param token
+     * @return
+     */
+    @PostMapping("/receive")
+    public MetaRestResponse compeleteTask(@RequestBody List<TaskInfoDto> taskInfoDtos, @RequestHeader("token") String token){
+
+        LOGGER.info("进入【receiveTask】方法中了，请求参数为：{}",JSONObject.toJSONString(taskInfoDtos,true));
+        taskService.compeleteTask(taskInfoDtos,token);
         LOGGER.info("退出【receiveTask】方法.......");
         return MetaRestResponse.success(ResponseCode.SUCCESS,"接收任务成功！");
     }

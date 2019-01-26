@@ -49,4 +49,6 @@ public interface TaskService {
     void receiveTask(List<TaskInfoDto> taskInfoDtos,String token);
 
     List<TaskInfoVo> queryTasks(TaskInfoDto taskInfoDto,String token);
+
+    void compeleteTask(List<TaskInfoDto> taskInfoDtos, String token);
 }

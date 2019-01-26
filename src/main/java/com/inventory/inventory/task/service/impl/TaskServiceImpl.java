@@ -165,4 +165,28 @@ public class TaskServiceImpl implements TaskService {
         return  taskInfoMapper.pageQuery(taskInfoDto);
     }
 
+    @Override
+    public void compeleteTask(List<TaskInfoDto> taskInfoDtos, String token) {
+        if (ObjectUtils.isEmpty(taskInfoDtos)){
+            throw new BusinessException(ResponseCode.PARAM_EMPTY_CODE,"请求参数不能为空！");
+        }
+        LoginSession userInfo = redisService.getT(token);
+
+        for (TaskInfoDto taskInfoDto:taskInfoDtos){
+            if (ObjectUtils.isEmpty(taskInfoDto.getTaskId())){
+                throw new BusinessException(ResponseCode.PARAM_EMPTY_CODE,"任务id不能为空！");
+            }
+            taskInfoDto.setUpdateTime(new Date());
+            taskInfoDto.setTaskStatus(TaskStatus.COMPLETED.getStatus());
+            taskInfoDto.setUpdateOperator(userInfo.getUserId());
+        }
+
+        try{
+            taskInfoMapper.batchUpdate(taskInfoDtos);
+        }catch (Exception e){
+            LOGGER.error("任务完成，更新失败！{}",e.getCause());
+            throw new BusinessException(ResponseCode.UPDATE_FAIL_CODE,"任务完成，更新失败！");
+        }
+    }
+
 }
