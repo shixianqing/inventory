@@ -80,6 +80,12 @@ public class LoginServiceImpl implements LoginService {
 
         registryDto.setCreateTime(new Date());
         registryDto.setPassword(basicTextEncryptor.encrypt(registryDto.getPassword()));
+
+        UserInfo userInfo = userInfoMapper.selectByLoginNo(registryDto.getLoginName());
+        if (!ObjectUtils.isEmpty(userInfo)){
+            throw new BusinessException(ResponseCode.USER_EXSIT_CODE,String.format("登录名称：%s已存在！",registryDto.getLoginName()));
+        }
+
         try {
 
             userInfoMapper.registry(registryDto);

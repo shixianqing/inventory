@@ -18,6 +18,8 @@ public interface UserInfoMapper {
 
     LoginSession selectByPrimaryKey(String loginName);
 
+    UserInfo selectByLoginNo(String loginName);
+
     int updateByPrimaryKeySelective(UserInfo record);
 
     int updateByPrimaryKey(UserInfo record);

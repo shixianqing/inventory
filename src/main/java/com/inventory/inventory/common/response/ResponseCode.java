@@ -73,6 +73,11 @@ public final class ResponseCode {
     public static final Integer USER_NOT_EXSIT_CODE = 3333;
 
     /**
+     * 用户已存在
+     */
+    public static final Integer USER_EXSIT_CODE = 12312;
+
+    /**
      * 密码错误
      */
     public static final Integer PWD_ERROR_CODE = 6666;

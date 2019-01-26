@@ -28,6 +28,15 @@
     where user_login_no = #{loginName,jdbcType=VARCHAR} and is_valid = 1
   </select>
 
+  <select id="selectByLoginNo" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List"/>
+    from
+      user_info
+    where
+      user_login_no = #{loginName,jdbcType=VARCHAR} and is_valid = 1
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from user_info
     where user_id = #{userId,jdbcType=INTEGER}
