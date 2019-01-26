@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class TaskGoodsVo {
 
+    private Integer goodsId;
+
     private String goodsName;//商品名称
 
     private Integer goodsNum;//商品数量

@@ -89,12 +89,12 @@ public class TaskController {
      * @param token
      * @return
      */
-    @PostMapping("/receive")
+    @PostMapping("/complete")
     public MetaRestResponse compeleteTask(@RequestBody List<TaskInfoDto> taskInfoDtos, @RequestHeader("token") String token){
 
-        LOGGER.info("进入【receiveTask】方法中了，请求参数为：{}",JSONObject.toJSONString(taskInfoDtos,true));
+        LOGGER.info("进入【compeleteTask】方法中了，请求参数为：{}",JSONObject.toJSONString(taskInfoDtos,true));
         taskService.compeleteTask(taskInfoDtos,token);
-        LOGGER.info("退出【receiveTask】方法.......");
-        return MetaRestResponse.success(ResponseCode.SUCCESS,"接收任务成功！");
+        LOGGER.info("退出【compeleteTask】方法.......");
+        return MetaRestResponse.success(ResponseCode.SUCCESS,"任务完成，更新成功！");
     }
 }

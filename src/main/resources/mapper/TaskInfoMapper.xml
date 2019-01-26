@@ -34,6 +34,7 @@
         <collection property="taskGoodsVos" ofType="com.inventory.inventory.task.vo.TaskGoodsVo">
             <result property="goodsName" column="goodsName" jdbcType="VARCHAR"/>
             <result property="goodsNum" column="goodsNum" jdbcType="INTEGER"/>
+            <result property="goodsId" column="goodsId" jdbcType="INTEGER"/>
             <result property="goodsUnit" column="goodsUnit" jdbcType="VARCHAR"/>
         </collection>
     </resultMap>
@@ -65,6 +66,7 @@
         s.store_address as storeAddress,
         s.leader_name as leaderName,
         s.leader_phone_no as leaderPhoneNo,
+        gd.goods_id as goodsId,
         gd.goods_name as goodsName ,
         g.goods_num as goodsNum,
         g.goods_unit as goodsUnit
@@ -86,6 +88,9 @@
             </if>
             <if test="sendUserId != null">
                 AND t.send_user_id = #{sendUserId,jdbcType=INTEGER}
+            </if>
+            <if test="taskStatus != null">
+                AND t.task_status = #{taskStatus,jdbcType=VARCHAR}
             </if>
         </where>
 
