@@ -14,6 +14,7 @@ import com.inventory.inventory.user.model.UserInfo;
 import com.inventory.inventory.user.model.UserRoleInfo;
 import com.inventory.inventory.user.model.UserStoreInfo;
 import com.inventory.inventory.user.service.LoginService;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private UserStoreInfoMapper userStoreInfoMapper;
+
+    @Autowired
+    private BasicTextEncryptor basicTextEncryptor;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginServiceImpl.class);
 
@@ -75,7 +79,7 @@ public class LoginServiceImpl implements LoginService {
         }
 
         registryDto.setCreateTime(new Date());
-        registryDto.setPassword(EncryptionUtils.encryPwd(registryDto.getPassword()));
+        registryDto.setPassword(basicTextEncryptor.encrypt(registryDto.getPassword()));
         try {
 
             userInfoMapper.registry(registryDto);
@@ -122,7 +126,8 @@ public class LoginServiceImpl implements LoginService {
             throw new BusinessException(ResponseCode.USER_NOT_EXSIT_CODE,String.format("登录名为%s的用户不存在！",loginDto.getLoginName()));
         }
 
-        if (!userInfo.getUserPwd().equals(EncryptionUtils.encryPwd(loginDto.getPassword()))){
+
+        if (!basicTextEncryptor.decrypt(userInfo.getUserPwd()).equals(loginDto.getPassword())){
             throw new BusinessException(ResponseCode.PWD_ERROR_CODE,"密码输入错误！");
         }
 

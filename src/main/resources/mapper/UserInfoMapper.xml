@@ -95,7 +95,7 @@
     
     <select id="getDeliverGoodsPerson" resultMap="BaseResultMap">
         select
-          user_id,user_name
+          u.user_id,u.user_name
         from
           user_info u
         inner join user_role_info r

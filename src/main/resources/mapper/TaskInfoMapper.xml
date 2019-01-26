@@ -79,13 +79,13 @@
         ON t.send_user_id = u1.user_id
         <where>
             <if test="taskId != null">
-                t.task_id = #{taskId,jdbcType=INTEGER} AND
+                t.task_id = #{taskId,jdbcType=INTEGER}
             </if>
             <if test="createOperator != null">
-                t.create_operator = #{createOperator,jdbcType=INTEGER}AND
+                AND t.create_operator = #{createOperator,jdbcType=INTEGER}
             </if>
             <if test="sendUserId != null">
-                t.send_user_id = #{sendUserId,jdbcType=INTEGER}AND
+                AND t.send_user_id = #{sendUserId,jdbcType=INTEGER}
             </if>
         </where>
 

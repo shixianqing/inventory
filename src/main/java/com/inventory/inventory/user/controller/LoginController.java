@@ -8,18 +8,15 @@ import com.inventory.inventory.common.response.ResponseCode;
 import com.inventory.inventory.user.dto.LoginDto;
 import com.inventory.inventory.user.dto.RegistryDto;
 import com.inventory.inventory.user.model.LoginSession;
-import com.inventory.inventory.user.model.UserInfo;
 import com.inventory.inventory.user.service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,6 +40,9 @@ public class LoginController {
 
     @Autowired
     private LoginService loginService;
+
+    @Value("${spring.expire.time}")
+    private Long expireTime;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
@@ -87,8 +87,12 @@ public class LoginController {
         LOGGER.info("进入login方法了.........");
         LoginSession userInfo = loginService.login(loginDto);
         String uuid = UUID.randomUUID().toString();
-        redisService.setT(uuid,userInfo,1000*60*60);
+        Map response = new HashMap();
+        response.put("token",uuid);
+        response.put("roleId",userInfo.getRoleId());
+        response.put("userName",userInfo.getUserName());
+        redisService.setT(uuid,userInfo,expireTime);
         LOGGER.info("退出login方法了.........token：{}", uuid);
-        return MetaRestResponse.success(ResponseCode.SUCCESS,uuid);
+        return MetaRestResponse.success(ResponseCode.SUCCESS,response);
     }
 }
