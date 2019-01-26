@@ -1,11 +1,9 @@
 package com.inventory.inventory.task.dao;
-
 import com.inventory.inventory.task.dto.TaskInfoDto;
 import com.inventory.inventory.task.model.TaskInfo;
+import com.inventory.inventory.task.vo.TaskInfoVo;
 import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface TaskInfoMapper {
@@ -13,7 +11,7 @@ public interface TaskInfoMapper {
 
     int insert(TaskInfoDto record);
 
-    List<Map> pageQuery(TaskInfoDto taskInfoDto);
+    List<TaskInfoVo> pageQuery(TaskInfoDto taskInfoDto);
 
     int insertSelective(TaskInfo record);
 
@@ -22,5 +20,7 @@ public interface TaskInfoMapper {
     int updateByPrimaryKeySelective(TaskInfoDto record);
 
     int updateByPrimaryKey(TaskInfo record);
+
+    int batchUpdate(List<TaskInfoDto> taskInfoDtos);
 
 }

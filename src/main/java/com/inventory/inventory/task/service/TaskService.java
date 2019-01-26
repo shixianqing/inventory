@@ -1,10 +1,9 @@
 package com.inventory.inventory.task.service;
 
 import com.inventory.inventory.task.dto.TaskInfoDto;
-import com.inventory.inventory.task.model.TaskInfo;
+import com.inventory.inventory.task.vo.TaskInfoVo;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author:shixianqing
@@ -17,7 +16,7 @@ public interface TaskService {
      * 新增任务
      * @param taskInfoDto
      */
-    void addTask(TaskInfoDto taskInfoDto);
+    void addTask(TaskInfoDto taskInfoDto,String token);
 
     /**
      * 分页查询任务
@@ -26,19 +25,28 @@ public interface TaskService {
      * @param taskInfoDto
      * @return
      */
-    List<Map> pageQuery(TaskInfoDto taskInfoDto);
+    List<TaskInfoVo> pageQuery(TaskInfoDto taskInfoDto,String token);
 
     /**
      * 将当前任务作废
      * 线下商户与管理员都能将当前任务作废
      * @param taskInfoDto
      */
-    void invalidTask(TaskInfoDto taskInfoDto);
+    void invalidTask(TaskInfoDto taskInfoDto,String token);
 
 
     /**
      * 分配任务
-     * @param taskInfoDto
+     * @param taskInfoDtos
      */
-    void assignTask(TaskInfoDto taskInfoDto);
+    void assignTask(List<TaskInfoDto> taskInfoDtos,String token);
+
+    /**
+     * 送货员接收任务
+     * @param taskInfoDtos
+     * @param token
+     */
+    void receiveTask(List<TaskInfoDto> taskInfoDtos,String token);
+
+    List<TaskInfoVo> queryTasks(TaskInfoDto taskInfoDto,String token);
 }

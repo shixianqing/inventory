@@ -31,4 +31,8 @@ public class TaskInfoDto {
     private Integer updateOperator;
 
     private Date updateTime;
+
+    private Integer pageNo = 1;
+
+    private Integer pageSize = 10;
 }

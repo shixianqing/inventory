@@ -27,6 +27,10 @@ public class GoodsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GoodsController.class);
 
+    /**
+     * 查询所有商品信息
+     * @return
+     */
     @GetMapping("/query")
     public MetaRestResponse queryGoods(){
         LOGGER.info("开始查询商品信息........");

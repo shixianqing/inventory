@@ -11,6 +11,33 @@
     <result column="update_operator" property="updateOperator" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+
+    <resultMap id="TaskResultMap" type="com.inventory.inventory.task.vo.TaskInfoVo" >
+        <id column="taskId" property="taskId" jdbcType="INTEGER" />
+        <result column="taskStatus" property="taskStatus" jdbcType="VARCHAR" />
+        <result column="isValid" property="isValid" jdbcType="VARCHAR" />
+        <result column="sendUserName" property="sendUserName" jdbcType="VARCHAR" />
+        <result column="createOperatorName" property="createOperatorName" jdbcType="VARCHAR" />
+        <result column="storeName" property="storeName" jdbcType="VARCHAR" />
+        <result column="storeAddress" property="storeAddress" jdbcType="VARCHAR" />
+        <result column="leaderName" property="leaderName" jdbcType="VARCHAR" />
+        <result column="leaderPhoneNo" property="leaderPhoneNo" jdbcType="VARCHAR" />
+        <result column="sendUserId" property="sendUserId" jdbcType="INTEGER" />
+        <result column="createOperator" property="createOperator" jdbcType="INTEGER" />
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="updateOperator" property="updateOperator" jdbcType="INTEGER" />
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+        <!--
+            collection定义关联结合类型的属性的封装规则
+		    ofType：指定集合里面元素的类型
+        -->
+        <collection property="taskGoodsVos" ofType="com.inventory.inventory.task.vo.TaskGoodsVo">
+            <result property="goodsName" column="goodsName" jdbcType="VARCHAR"/>
+            <result property="goodsNum" column="goodsNum" jdbcType="INTEGER"/>
+            <result property="goodsUnit" column="goodsUnit" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
   <sql id="Base_Column_List" >
     task_id, task_status, is_valid, send_user_id, create_operator, create_time, update_operator, 
     update_time
@@ -22,26 +49,43 @@
     where task_id = #{taskId,jdbcType=INTEGER}
   </select>
 
-    <select id="pageQuery" parameterType="com.inventory.inventory.task.dto.TaskInfoDto" resultType="map">
-        select  t.task_id, t.task_status, t.is_valid, t.send_user_id, t.create_operator, t.create_time, t.update_operator,
-                t.update_time,s.store_name,s.store_address,s.leader_name,s.leader_phone_no,gd.goods_name,g.goods_num,g.goods_unit
-        from
-          task_info t
-        left join
-          task_goods_info g
-        on t.task_id = g.task_id
-        left join
-          store_info s
-        on g.store_id = s.store_id
-        left join
-         goods_info gd
-        on g.goods_id = gd.goods_id
+    <select id="pageQuery" parameterType="com.inventory.inventory.task.dto.TaskInfoDto" resultMap="TaskResultMap">
+        SELECT
+        t.task_id as taskId,
+        t.task_status as taskStatus,
+        t.is_valid AS isValid,
+        t.send_user_id as sendUserId,
+        t.create_operator as createOperator,
+        t.create_time as createTime,
+        u.user_name AS createOperatorName,
+        u1.user_name AS sendUserName,
+        t.update_operator as updateOperator,
+        t.update_time as updateTime,
+        s.store_name as storeName,
+        s.store_address as storeAddress,
+        s.leader_name as leaderName,
+        s.leader_phone_no as leaderPhoneNo,
+        gd.goods_name as goodsName ,
+        g.goods_num as goodsNum,
+        g.goods_unit as goodsUnit
+        FROM
+        task_info t
+        LEFT JOIN task_goods_info g ON t.task_id = g.task_id
+        LEFT JOIN store_info s ON g.store_id = s.store_id
+        LEFT JOIN goods_info gd ON g.goods_id = gd.goods_id
+        LEFT JOIN user_info u
+        ON t.create_operator = u.user_id
+        LEFT JOIN user_info u1
+        ON t.send_user_id = u1.user_id
         <where>
             <if test="taskId != null">
                 t.task_id = #{taskId,jdbcType=INTEGER} AND
             </if>
             <if test="createOperator != null">
                 t.create_operator = #{createOperator,jdbcType=INTEGER}AND
+            </if>
+            <if test="sendUserId != null">
+                t.send_user_id = #{sendUserId,jdbcType=INTEGER}AND
             </if>
         </where>
 
@@ -54,7 +98,7 @@
 
 
   <insert id="insert" parameterType="com.inventory.inventory.task.dto.TaskInfoDto" >
-      <selectKey keyProperty="task_id" resultType="java.lang.Integer">
+      <selectKey keyProperty="taskId" resultType="java.lang.Integer">
           select LAST_INSERT_ID()
       </selectKey>
     insert into task_info (task_status, is_valid,
@@ -64,61 +108,6 @@
   </insert>
 
 
-  <insert id="insertSelective" parameterType="com.inventory.inventory.task.model.TaskInfo" >
-    insert into task_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="taskId != null" >
-        task_id,
-      </if>
-      <if test="taskStatus != null" >
-        task_status,
-      </if>
-      <if test="isValid != null" >
-        is_valid,
-      </if>
-      <if test="sendUserId != null" >
-        send_user_id,
-      </if>
-      <if test="createOperator != null" >
-        create_operator,
-      </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="updateOperator != null" >
-        update_operator,
-      </if>
-      <if test="updateTime != null" >
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="taskId != null" >
-        #{taskId,jdbcType=INTEGER},
-      </if>
-      <if test="taskStatus != null" >
-        #{taskStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="isValid != null" >
-        #{isValid,jdbcType=VARCHAR},
-      </if>
-      <if test="sendUserId != null" >
-        #{sendUserId,jdbcType=INTEGER},
-      </if>
-      <if test="createOperator != null" >
-        #{createOperator,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateOperator != null" >
-        #{updateOperator,jdbcType=INTEGER},
-      </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.inventory.inventory.task.dto.TaskInfoDto" >
     update task_info
     <set >
@@ -140,15 +129,28 @@
     </set>
     where task_id = #{taskId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.inventory.inventory.task.model.TaskInfo" >
-    update task_info
-    set task_status = #{taskStatus,jdbcType=VARCHAR},
-      is_valid = #{isValid,jdbcType=VARCHAR},
-      send_user_id = #{sendUserId,jdbcType=INTEGER},
-      create_operator = #{createOperator,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_operator = #{updateOperator,jdbcType=INTEGER},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where task_id = #{taskId,jdbcType=INTEGER}
-  </update>
+
+    <update id="batchUpdate" parameterType="java.util.List" >
+        <foreach collection="list" index="" item="task" open="" close="" separator=";">
+            update task_info
+            <set >
+                <if test="task.taskStatus != null" >
+                    task_status = #{task.taskStatus,jdbcType=VARCHAR},
+                </if>
+                <if test="task.isValid != null" >
+                    is_valid = #{task.isValid,jdbcType=VARCHAR},
+                </if>
+                <if test="task.sendUserId != null" >
+                    send_user_id = #{task.sendUserId,jdbcType=INTEGER},
+                </if>
+                <if test="task.updateOperator != null" >
+                    update_operator = #{task.updateOperator,jdbcType=INTEGER},
+                </if>
+                <if test="task.updateTime != null" >
+                    update_time = #{task.updateTime,jdbcType=TIMESTAMP},
+                </if>
+            </set>
+            where task_id = #{task.taskId,jdbcType=INTEGER}
+        </foreach>
+    </update>
 </mapper>

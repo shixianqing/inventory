@@ -7,6 +7,7 @@ import com.inventory.inventory.common.response.MetaRestResponse;
 import com.inventory.inventory.common.response.ResponseCode;
 import com.inventory.inventory.user.dto.LoginDto;
 import com.inventory.inventory.user.dto.RegistryDto;
+import com.inventory.inventory.user.model.LoginSession;
 import com.inventory.inventory.user.model.UserInfo;
 import com.inventory.inventory.user.service.LoginService;
 import org.slf4j.Logger;
@@ -84,7 +85,7 @@ public class LoginController {
     @PostMapping("/login")
     public MetaRestResponse login(@RequestBody LoginDto loginDto){
         LOGGER.info("进入login方法了.........");
-        UserInfo userInfo = loginService.login(loginDto);
+        LoginSession userInfo = loginService.login(loginDto);
         String uuid = UUID.randomUUID().toString();
         redisService.setT(uuid,userInfo,1000*60*60);
         LOGGER.info("退出login方法了.........token：{}", uuid);

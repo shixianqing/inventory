@@ -54,7 +54,7 @@ public class CrossConfig extends DelegatingWebMvcConfiguration {
                    throw new BusinessException(ResponseCode.CHECK_FAIL_CODE,"未发现令牌，请登录！");
                }
 
-               if (ObjectUtils.isEmpty(redisService.getT(token))){
+               if (redisService.getT(token) == null){
                    throw new BusinessException(ResponseCode.CHECK_FAIL_CODE,"令牌非法，请重新登录！");
                }
                return true;

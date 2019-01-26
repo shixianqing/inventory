@@ -16,12 +16,18 @@
     user_id, user_login_no, weixin_id, user_name, user_pwd, is_valid, create_time, update_operator, 
     update_time
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="selectByPrimaryKey" resultType="com.inventory.inventory.user.model.LoginSession" parameterType="java.lang.String" >
     select 
-    <include refid="Base_Column_List" />
-    from user_info
-    where user_login_no = #{loginName,jdbcType=VARCHAR}
+      u.user_id as userId,u.user_login_no as userLoginNo,u.user_name as userName,
+      u.user_pwd as userPwd,r.role_id as roleId,s.store_id as storeId
+    from user_info u
+    left join user_role_info r
+    on u.user_id = r.user_id
+    left join user_store_info s
+    on u.user_id = s.user_id
+    where user_login_no = #{loginName,jdbcType=VARCHAR} and is_valid = 1
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from user_info
     where user_id = #{userId,jdbcType=INTEGER}
@@ -48,67 +54,6 @@
       #{userName,jdbcType=VARCHAR}, #{userPwd,jdbcType=INTEGER}, #{isValid,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateOperator,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}
       )
-  </insert>
-  <insert id="insertSelective" parameterType="com.inventory.inventory.user.model.UserInfo" >
-    insert into user_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="userId != null" >
-        user_id,
-      </if>
-      <if test="userLoginNo != null" >
-        user_login_no,
-      </if>
-      <if test="weixinId != null" >
-        weixin_id,
-      </if>
-      <if test="userName != null" >
-        user_name,
-      </if>
-      <if test="userPwd != null" >
-        user_pwd,
-      </if>
-      <if test="isValid != null" >
-        is_valid,
-      </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="updateOperator != null" >
-        update_operator,
-      </if>
-      <if test="updateTime != null" >
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="userId != null" >
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="userLoginNo != null" >
-        #{userLoginNo,jdbcType=VARCHAR},
-      </if>
-      <if test="weixinId != null" >
-        #{weixinId,jdbcType=VARCHAR},
-      </if>
-      <if test="userName != null" >
-        #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="userPwd != null" >
-        #{userPwd,jdbcType=INTEGER},
-      </if>
-      <if test="isValid != null" >
-        #{isValid,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateOperator != null" >
-        #{updateOperator,jdbcType=INTEGER},
-      </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.inventory.inventory.user.model.UserInfo" >
     update user_info
@@ -140,16 +85,22 @@
     </set>
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.inventory.inventory.user.model.UserInfo" >
-    update user_info
-    set user_login_no = #{userLoginNo,jdbcType=VARCHAR},
-      weixin_id = #{weixinId,jdbcType=VARCHAR},
-      user_name = #{userName,jdbcType=VARCHAR},
-      user_pwd = #{userPwd,jdbcType=INTEGER},
-      is_valid = #{isValid,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_operator = #{updateOperator,jdbcType=INTEGER},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
+
+    <select id="queryAllRoles" resultType="com.inventory.inventory.user.model.Role">
+        select
+          role_id as roleId,role_name as roleName
+        from
+          role_info
+    </select>
+    
+    <select id="getDeliverGoodsPerson" resultMap="BaseResultMap">
+        select
+          user_id,user_name
+        from
+          user_info u
+        inner join user_role_info r
+        on u.user_id = r.user_id
+        where
+          r.role_id = 2
+    </select>
 </mapper>

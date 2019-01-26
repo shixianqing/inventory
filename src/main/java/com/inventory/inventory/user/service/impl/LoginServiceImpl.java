@@ -1,12 +1,15 @@
 package com.inventory.inventory.user.service.impl;
 
+import com.inventory.inventory.common.enums.Role;
 import com.inventory.inventory.common.exception.BusinessException;
 import com.inventory.inventory.common.response.ResponseCode;
+import com.inventory.inventory.common.util.EncryptionUtils;
 import com.inventory.inventory.user.dao.UserInfoMapper;
 import com.inventory.inventory.user.dao.UserRoleInfoMapper;
 import com.inventory.inventory.user.dao.UserStoreInfoMapper;
 import com.inventory.inventory.user.dto.LoginDto;
 import com.inventory.inventory.user.dto.RegistryDto;
+import com.inventory.inventory.user.model.LoginSession;
 import com.inventory.inventory.user.model.UserInfo;
 import com.inventory.inventory.user.model.UserRoleInfo;
 import com.inventory.inventory.user.model.UserStoreInfo;
@@ -61,7 +64,9 @@ public class LoginServiceImpl implements LoginService {
         if (ObjectUtils.isEmpty(registryDto.getRoleId())){
             throw new BusinessException(ResponseCode.PARAM_EMPTY_CODE,"角色id不能为空！");
         }
-        if (ObjectUtils.isEmpty(registryDto.getStoreId())){
+
+        //当角色是经销商时，商户id不能为空！
+        if (ObjectUtils.isEmpty(registryDto.getStoreId()) && registryDto.getRoleId() == 3){
             throw new BusinessException(ResponseCode.PARAM_EMPTY_CODE,"商户id不能为空！");
         }
 
@@ -70,19 +75,21 @@ public class LoginServiceImpl implements LoginService {
         }
 
         registryDto.setCreateTime(new Date());
-
+        registryDto.setPassword(EncryptionUtils.encryPwd(registryDto.getPassword()));
         try {
+
             userInfoMapper.registry(registryDto);
 
             UserRoleInfo userRoleInfo = new UserRoleInfo();
             userRoleInfo.setRoleId(registryDto.getRoleId());
             userRoleInfo.setUserId(registryDto.getUserId());
             userRoleInfoMapper.insert(userRoleInfo);
-
-            UserStoreInfo userStoreInfo = new UserStoreInfo();
-            userStoreInfo.setUserId(registryDto.getUserId());
-            userStoreInfo.setStoreId(registryDto.getStoreId());
-            userStoreInfoMapper.insert(userStoreInfo);
+            if (registryDto.getRoleId() == Role.DEALER.getType()){
+                UserStoreInfo userStoreInfo = new UserStoreInfo();
+                userStoreInfo.setUserId(registryDto.getUserId());
+                userStoreInfo.setStoreId(registryDto.getStoreId());
+                userStoreInfoMapper.insert(userStoreInfo);
+            }
 
         }catch (Exception e){
             LOGGER.error("注册失败！{}",e.getCause());
@@ -92,7 +99,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public UserInfo login(LoginDto loginDto) {
+    public LoginSession login(LoginDto loginDto) {
         if (ObjectUtils.isEmpty(loginDto)){
             throw new BusinessException(ResponseCode.PARAM_EMPTY_CODE,"登录参数不能为空！");
         }
@@ -105,7 +112,7 @@ public class LoginServiceImpl implements LoginService {
             throw new BusinessException(ResponseCode.PARAM_EMPTY_CODE,"登录密码不能为空！");
         }
 
-        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(loginDto.getLoginName());
+        LoginSession userInfo = userInfoMapper.selectByPrimaryKey(loginDto.getLoginName());
 
         if (ObjectUtils.isEmpty(userInfo)){
             throw new BusinessException(ResponseCode.USER_NOT_EXSIT_CODE,String.format("登录名为%s的用户不存在！",loginDto.getLoginName()));
@@ -115,7 +122,7 @@ public class LoginServiceImpl implements LoginService {
             throw new BusinessException(ResponseCode.USER_NOT_EXSIT_CODE,String.format("登录名为%s的用户不存在！",loginDto.getLoginName()));
         }
 
-        if (!userInfo.getUserPwd().equals(loginDto.getPassword())){
+        if (!userInfo.getUserPwd().equals(EncryptionUtils.encryPwd(loginDto.getPassword()))){
             throw new BusinessException(ResponseCode.PWD_ERROR_CODE,"密码输入错误！");
         }
 
