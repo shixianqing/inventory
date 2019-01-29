@@ -56,13 +56,21 @@ public class GoodsController {
         return base64;
     }
 
+    /**
+     *
+     * @param request
+     * @param file 表单提交时，上传文件对应的key
+     * @throws IOException
+     */
     @GetMapping("/image/upload")
-    public void uploadFile(MultipartHttpServletRequest request) throws IOException {
-        List<MultipartFile> multipartFiles = request.getFiles("file");
+    public MetaRestResponse uploadFile(MultipartHttpServletRequest request,@RequestParam String file) throws IOException {
+        List<MultipartFile> multipartFiles = request.getFiles(file);
         for (MultipartFile multipartFile:multipartFiles){
             String originName = multipartFile.getOriginalFilename();
             LOGGER.info("上传文件：{}",originName);
             ftpUtil.uploadFile(multipartFile.getInputStream(),originName);
         }
+
+        return MetaRestResponse.success(ResponseCode.SUCCESS,"文件上传成功");
     }
 }
