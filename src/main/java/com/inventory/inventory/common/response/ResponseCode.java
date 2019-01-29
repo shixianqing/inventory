@@ -81,4 +81,9 @@ public final class ResponseCode {
      * 密码错误
      */
     public static final Integer PWD_ERROR_CODE = 6666;
+
+    /**
+     * 文件上传失败码
+     */
+    public static final Integer UPLOAD_FILE_FAIL_CODE = 9212;
 }

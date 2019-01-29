@@ -70,7 +70,7 @@ public class LoginServiceImpl implements LoginService {
         }
 
         //当角色是经销商时，商户id不能为空！
-        if (ObjectUtils.isEmpty(registryDto.getStoreId()) && registryDto.getRoleId() == 3){
+        if (ObjectUtils.isEmpty(registryDto.getStoreId()) && registryDto.getRoleId() == Role.DEALER.getType()){
             throw new BusinessException(ResponseCode.PARAM_EMPTY_CODE,"商户id不能为空！");
         }
 
